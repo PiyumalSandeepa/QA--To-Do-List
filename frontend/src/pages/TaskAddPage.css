@@ -1,0 +1,115 @@
+/* TaskAddPage.css */
+.taskadd-container {
+    min-height: 100vh;
+    width: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #4facfe 0%, #43e97b 100%);
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.taskadd-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.taskadd-card h2 {
+    text-align: center;
+    color: #222; /* dark title */
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.taskadd-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.taskadd-card input,
+.taskadd-card textarea {
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: #fff;
+    color: #222; /* dark text */
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.taskadd-card input::placeholder,
+.taskadd-card textarea::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.taskadd-card input:focus,
+.taskadd-card textarea:focus {
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
+    border-color: rgba(79, 172, 254, 0.5);
+}
+
+.taskadd-card textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.taskadd-card button {
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: #43e97b;
+    color: #222; /* dark text on green button */
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.taskadd-card button:hover {
+    background: #38d774;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.taskadd-card button:active {
+    transform: translateY(0);
+}
+
+/* Animation for the form */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .taskadd-card {
+        padding: 30px 20px;
+    }
+
+    .taskadd-card h2 {
+        font-size: 24px;
+    }
+}

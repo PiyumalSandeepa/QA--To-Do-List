@@ -1,0 +1,223 @@
+name: TaskApp CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # ---------------- Backend ----------------
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17  # Updated JDK version to 17
+
+      - name: Build backend
+        working-directory: ./backend
+        run: mvn clean install -DskipTests
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: mvn test
+
+      - name: Start backend server in background
+        working-directory: ./backend
+        run: |
+          nohup mvn spring-boot:run > backend.log 2>&1 &
+          sleep 15
+
+      # ---------------- Frontend ----------------
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 23
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Start frontend server in background
+        working-directory: ./frontend
+        run: |
+          nohup npm run preview > frontend.log 2>&1 &
+          sleep 15
+
+      - name: Setup Chrome for Selenium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          # Clean up any leftover Chrome user data directories
+          rm -rf /tmp/selenium_* || true
+      
+      - name: Run Selenium tests
+        working-directory: ./frontend
+        run: npm run test:selenium
+
+      # ---------------- ANALYZE STEPS ----------------
+      - name: Run backend code coverage
+        working-directory: ./backend
+        run: mvn jacoco:report
+
+      - name: SonarQube Scan (Backend)
+        if: github.event_name == 'push'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        working-directory: ./backend
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=taskapp-backend \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.organization=${{ github.repository_owner }}
+
+      - name: Run frontend linting
+        working-directory: ./frontend
+        run: npm run lint || true
+
+      - name: Run frontend code coverage
+        working-directory: ./frontend
+        run: npm run test:coverage || true
+
+      - name: Upload backend coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./backend/target/site/jacoco
+          flags: backend
+          name: backend-coverage
+
+      - name: Upload frontend coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./frontend/coverage
+          flags: frontend
+          name: frontend-coverage
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== Backend Logs ==="
+          cat backend/backend.log || echo "No backend log found"
+          echo "=== Frontend Logs ==="
+          cat frontend/frontend.log || echo "No frontend log found"
+
+  # ---------------- DEPLOY JOB ----------------
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17  # Updated JDK version to 17
+
+      - name: Build backend for production
+        working-directory: ./backend
+        run: mvn clean package -DskipTests
+
+      # Option 1: Deploy to AWS (EC2/Elastic Beanstalk)
+      - name: Deploy to AWS
+        if: false  # Enable when AWS is configured
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+        run: |
+          # Install AWS CLI
+          pip install awscli
+          
+          # Deploy backend to Elastic Beanstalk
+          cd backend
+          zip -r app.zip target/*.jar .ebextensions
+          aws s3 cp app.zip s3://your-bucket/app-${{ github.sha }}.zip
+          aws elasticbeanstalk create-application-version \
+            --application-name taskapp \
+            --version-label ${{ github.sha }} \
+            --source-bundle S3Bucket=your-bucket,S3Key=app-${{ github.sha }}.zip
+          aws elasticbeanstalk update-environment \
+            --environment-name taskapp-env \
+            --version-label ${{ github.sha }}
+
+      # Option 2: Deploy to Heroku
+      - name: Deploy to Heroku
+        if: false  # Enable when Heroku is configured
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          # Install Heroku CLI
+          curl https://cli-assets.heroku.com/install.sh | sh
+          
+          # Deploy backend
+          cd backend
+          heroku container:login
+          heroku container:push web --app your-heroku-app
+          heroku container:release web --app your-heroku-app
+
+      # Option 3: Deploy using Docker
+      - name: Build and push Docker images
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          # Login to Docker Hub
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          
+          # Build and push backend
+          cd backend
+          docker build -t $DOCKER_USERNAME/taskapp-backend:latest .
+          docker push $DOCKER_USERNAME/taskapp-backend:latest
+          
+          # Build and push frontend
+          cd ../frontend
+          docker build -t $DOCKER_USERNAME/taskapp-frontend:latest .
+          docker push $DOCKER_USERNAME/taskapp-frontend:latest
+
+      # Deploy to a VPS using SSH
+      - name: Deploy to VPS
+        if: false  # Enable when VPS is configured
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /var/www/taskapp
+            docker-compose pull
+            docker-compose up -d
+            docker system prune -f
+
+      # Deploy frontend to Netlify
+      - name: Deploy frontend to Netlify
+        if: false  # Enable when Netlify is configured
+        working-directory: ./frontend
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          npm install -g netlify-cli
+          npm run build
+          netlify deploy --prod --dir=dist
+
+      # Simple deployment notification
+      - name: Deployment notification
+        if: success()
+        run: echo "Deployment completed successfully!"

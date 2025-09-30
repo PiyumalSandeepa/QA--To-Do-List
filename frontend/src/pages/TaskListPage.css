@@ -1,0 +1,162 @@
+/* TaskListPage.css */
+.tasklist-container {
+    min-height: 100vh;
+    display: flex;
+    width: 800px;
+    justify-content: center;
+    align-items: flex-start;
+    background: linear-gradient(135deg, #4facfe 0%, #43e97b 100%);
+    padding: 40px 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tasklist-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tasklist-card h2 {
+    text-align: center;
+    color: #222; /* dark heading */
+    margin-bottom: 30px;
+    font-size: 32px;
+    font-weight: 700;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tasklist-card > p {
+    text-align: center;
+    color: #444; /* darker text */
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.tasklist-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 20px;
+}
+
+.tasklist-card li {
+    background: #fff;
+    backdrop-filter: blur(5px);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.tasklist-card li:hover {
+    background: #f9f9f9;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.tasklist-card li h3 {
+    color: #222;
+    margin: 0 0 12px 0;
+    font-size: 20px;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tasklist-card li p {
+    color: #333;
+    margin: 0;
+    line-height: 1.5;
+    font-size: 16px;
+}
+
+/* Loading state */
+.tasklist-card:empty::before {
+    content: "Loading tasks...";
+    display: block;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+/* Animation for the list items */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Staggered animation for list items */
+.tasklist-card li:nth-child(1) { animation-delay: 0.1s; }
+.tasklist-card li:nth-child(2) { animation-delay: 0.2s; }
+.tasklist-card li:nth-child(3) { animation-delay: 0.3s; }
+.tasklist-card li:nth-child(4) { animation-delay: 0.4s; }
+.tasklist-card li:nth-child(5) { animation-delay: 0.5s; }
+
+/* Empty state styling */
+.tasklist-card .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.tasklist-card .empty-state p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.tasklist-card .empty-state .icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .tasklist-container {
+        padding: 20px 15px;
+    }
+
+    .tasklist-card {
+        padding: 30px 20px;
+    }
+
+    .tasklist-card h2 {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tasklist-card {
+        padding: 25px 15px;
+    }
+
+    .tasklist-card h2 {
+        font-size: 24px;
+    }
+
+    .tasklist-card li {
+        padding: 15px;
+    }
+
+    .tasklist-card li h3 {
+        font-size: 18px;
+    }
+
+    .tasklist-card li p {
+        font-size: 14px;
+    }
+}
