@@ -27,18 +27,22 @@ jobs:
       # Install dependencies (use `npm install` for Node.js or `mvn install` for Java)
       - name: Install Dependencies
         run: npm install  # Run `npm install` for Node.js projects
+        working-directory: ./frontend  # Add working directory for frontend
 
       # Run unit tests (replace with your own test command, e.g., `mvn test` for Java)
       - name: Run Unit Tests
         run: npm test  # This will run the unit tests
+        working-directory: ./frontend  # Add working directory for frontend
 
       # Run Postman API tests using Newman (optional, if you have Postman tests)
       - name: Run Postman API Tests
         run: newman run ./tests/postman-collection.json  # Run Postman API tests using Newman
+        working-directory: ./frontend  # Add working directory for frontend
 
       # Run UI tests (if using Selenium or similar, change this as needed)
       - name: Run UI Automation Tests
         run: node ./tests/selenium-tests.js  # Replace with your Selenium test file path
+        working-directory: ./frontend  # Add working directory for frontend
 
   # Deployment (optional)
   deploy:
