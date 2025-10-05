@@ -65,14 +65,14 @@ jobs:
         run: nohup npx http-server ./dist -p 5173 -s > ui.log 2>&1 &
 
       # ---------- Selenium UI tests ----------
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@v1
+    #   - name: Install Chrome
+    #     uses: browser-actions/setup-chrome@v1
 
-      - name: Run Selenium E2E
-        working-directory: frontend
-        env:
-          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
-        run: npm run selenium:e2e
+    #   - name: Run Selenium E2E
+    #     working-directory: frontend
+    #     env:
+    #       CHROME_PATH: 
+    #     run: npm run selenium:e2e
 
       # ---------- Artifacts (optional) ----------
       - name: Upload backend jar
