@@ -4,9 +4,9 @@ import "./TaskListPage.css";
 function TaskListPage() {
   const [tasks, setTasks] = useState([]);
 
-  // Fetch tasks from backend
+ 
   useEffect(() => {
-    fetch("http://localhost:8080/tasks") // adjust port if needed
+    fetch("http://localhost:8080/tasks") 
       .then((res) => res.json())
       .then((data) => setTasks(data))
       .catch((err) => console.error("Error fetching tasks:", err));

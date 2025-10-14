@@ -80,38 +80,38 @@ async function waitForServer(url, timeout = 30000) {
 
   try {
     console.log(`Opening browser and navigating to ${baseUrl}...`);
-    // 1️⃣ Open the Task Add page
+    //  Open the Task Add page
     await driver.get(baseUrl);
 
-    // 2️⃣ Fill in task title
+    // Fill in task title
     const titleInput = await driver.wait(
       until.elementLocated(By.css("input[placeholder='Enter task title']")),
       5000
     );
     await titleInput.sendKeys("Automated Test Task");
 
-    // 3️⃣ Fill in task description
+    // Fill in task description
     const descInput = await driver.findElement(
       By.css("textarea[placeholder='Enter task description']")
     );
     await descInput.sendKeys("Task added via Selenium test");
 
-    // 4️⃣ Click Save Task button
+    // Click Save Task button
     const saveButton = await driver.findElement(By.xpath("//button[text()='Save Task']"));
     await saveButton.click();
 
-    // 5️⃣ Wait until redirected to /tasks page
+    // Wait until redirected to /tasks page
     await driver.wait(until.urlContains("/tasks"), 5000);
 
     console.log("✅ TaskAddPage Selenium test passed!");
 
-    // 6️⃣ Now let's verify the added task on the Task List page
+    // verify the added task on the Task List page
     console.log("Verifying Task List...");
 
     // Navigate to Task List page
     await driver.get(`${baseUrl}/tasks`);
 
-    // 7️⃣ Wait for the task list to appear
+    // Wait for the task list to appear
     const taskList = await driver.wait(
       until.elementLocated(By.css("ul")), // assuming tasks are listed in <ul> tag
       5000
