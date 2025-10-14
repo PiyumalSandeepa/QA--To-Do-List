@@ -3,9 +3,9 @@ import './LandingPage.css';
 
 const LandingPage = () => {
   const handleGetStarted = () => {
-    // This would typically navigate to the task add page
+   
     alert('Redirecting to task creation page...');
-    // In a real app: history.push('/add-task') or similar
+   
   };
 
   return (
