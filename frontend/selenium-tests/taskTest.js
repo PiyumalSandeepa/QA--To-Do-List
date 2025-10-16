@@ -19,11 +19,11 @@ async function waitForServer(url, timeout = 30000) {
 }
 
 (async function taskTest() {
-  // Try different ports for frontend server
+ 
   const possibleUrls = [
-    "http://localhost:4173", // Vite preview server (CI)
-    "http://localhost:5174", // Vite dev server
-    "http://localhost:5173"  // Default Vite dev server
+    "http://localhost:4173", 
+    "http://localhost:5174",
+    "http://localhost:5173" 
   ];
 
   let baseUrl = null;
@@ -40,11 +40,11 @@ async function waitForServer(url, timeout = 30000) {
   }
 
   if (!baseUrl) {
-    console.error("❌ No frontend server found. Please start the frontend server first.");
+    console.error("No frontend server found. Please start the frontend server first.");
     process.exit(1);
   }
 
-  // Configure Chrome options for CI/headless environment
+  
   const chromeOptions = new chrome.Options();
 
   // Create truly unique user data directory using UUID and process ID
@@ -103,7 +103,7 @@ async function waitForServer(url, timeout = 30000) {
     // Wait until redirected to /tasks page
     await driver.wait(until.urlContains("/tasks"), 5000);
 
-    console.log("✅ TaskAddPage Selenium test passed!");
+    console.log(" TaskAddPage Selenium test passed!");
 
     // verify the added task on the Task List page
     console.log("Verifying Task List...");
@@ -113,7 +113,7 @@ async function waitForServer(url, timeout = 30000) {
 
     // Wait for the task list to appear
     const taskList = await driver.wait(
-      until.elementLocated(By.css("ul")), // assuming tasks are listed in <ul> tag
+      until.elementLocated(By.css("ul")), // assume tasks in <ul>
       5000
     );
 
@@ -131,14 +131,14 @@ async function waitForServer(url, timeout = 30000) {
 
     // Assert that the task is found
     if (taskFound) {
-      console.log("✅ TaskListPage Selenium test passed!");
+      console.log(" TaskListPage Selenium test passed!");
     } else {
-      console.error("❌ TaskListPage Selenium test failed: Task not found in the list.");
+      console.error(" TaskListPage Selenium test failed: Task not found in the list.");
       process.exit(1);
     }
 
   } catch (error) {
-    console.error("❌ Selenium test failed:", error);
+    console.error(" Selenium test failed:", error);
     process.exit(1);
   } finally {
     console.log("Cleaning up browser session...");
